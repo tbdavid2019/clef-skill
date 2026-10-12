@@ -66,9 +66,23 @@ Cursor Cloud Agents 需同步個人 skill，或採用專案層級的 `.agents/sk
 
 將以下英文 prompt 交給任何目標代理。LLM 應依目前環境選擇安裝方式：
 
+目前 skill 的實際路徑為
+[`skills/clef-jev/SKILL.md`](https://github.com/tbdavid2019/clef-skill/blob/main/skills/clef-jev/SKILL.md)。
+安裝時以最新 `main` 的 Git checkout 為準，避免沿用先前抓取的 GitHub 頁面。
+
 ```text
 Install the clef-jev Agent Skill from this repository:
 https://github.com/tbdavid2019/clef-skill
+
+First fetch a fresh checkout of the current main branch using Git. Do not rely
+on an earlier WebFetch response, a search snippet, or a previously cached clone.
+Choose a new temporary directory for CHECKOUT_DIR and run:
+git clone --depth 1 --branch main https://github.com/tbdavid2019/clef-skill.git CHECKOUT_DIR
+
+Read CHECKOUT_DIR/skills/clef-jev/SKILL.md and confirm its name is clef-jev.
+The current repository contains skills/clef-jev/, not skills/typesafe-ai/ or a
+Claude plugin marketplace. If the checkout has the old layout, check its remote
+and commit against the current main branch before proceeding.
 
 Determine which agent environment you are running in, then install clef-jev for
 that agent at user/global scope using its native Agent Skills installer or the
@@ -76,14 +90,15 @@ skills CLI. This skill supports Codex, Claude Code, OpenCode, Pi, Antigravity
 (IDE and agy CLI), Gemini CLI, and Cursor. Use the matching skills CLI agent ID:
 codex, claude-code, opencode, pi, antigravity, antigravity-cli, gemini-cli, or cursor.
 
-For the skills CLI, replace AGENT_ID with the current agent's ID and run:
-npx skills add tbdavid2019/clef-skill --skill clef-jev -g -a AGENT_ID -y
+For the skills CLI, install from that fresh checkout. Replace CHECKOUT_DIR with
+its actual path and AGENT_ID with the current agent's ID:
+npx skills add CHECKOUT_DIR --skill clef-jev -g -a AGENT_ID -y
 
 Install only clef-jev for the current agent. Keep the complete skills/clef-jev/
 directory, including scripts and references. If the installer is unavailable,
 copy that complete directory into the current agent's supported skills location.
 Verify discovery using that agent's own skill interface and report the installed
-path and how to invoke it. Do not assume any particular agent or invoke another
+path, the checkout commit SHA, and how to invoke it. Do not assume any particular agent or invoke another
 agent's CLI. Check whether Python 3 and HTTPS access are available for the helper.
 
 The self-hosted Clef endpoints require no API keys. Do not request or set Clef
