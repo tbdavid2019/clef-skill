@@ -28,14 +28,14 @@ npx skills add tbdavid2019/clef-skill --skill typesafe-ai
 
 依提示選擇代理；加上 `-g` 可安裝到全域。
 
-### Codex、Gemini CLI、Antigravity、Pi、OpenCode
+### Codex、Gemini CLI、Antigravity、Cursor、Pi、OpenCode
 
 這些工具都支援以 `SKILL.md` 為核心的 Agent Skills 格式。使用 skills CLI
 可一次安裝到個人環境中的多個代理：
 
 ```bash
 npx skills add tbdavid2019/clef-skill --skill typesafe-ai -g \
-  -a claude-code -a codex -a gemini-cli -a antigravity \
+  -a claude-code -a codex -a gemini-cli -a antigravity -a cursor \
   -a antigravity-cli -a pi -a opencode -y
 ```
 
@@ -44,8 +44,36 @@ Claude Code plugin 命令只用於 Claude Code；其他代理載入同一份
 [格式](https://developers.openai.com/codex/skills)與各代理的載入方式見
 [Gemini CLI](https://geminicli.com/docs/cli/using-agent-skills/)、
 [Antigravity](https://www.antigravity.google/docs/skills)、
+[Cursor](https://cursor.com/docs/skills)、
 [Pi](https://pi.dev/docs/latest/skills)及
 [OpenCode](https://opencode.ai/docs/skills)文件。
+
+Cursor 本機可讀 user/global skill。Cursor Cloud Agents 需要在設定中同步
+個人 skills，或在工作 repo 中加入 project-level skill。
+
+### 給 LLM 的安裝 Prompt
+
+把以下 prompt 和 repo URL 一起交給目標代理：
+
+```text
+Please install the `typesafe-ai` Agent Skill from this repository:
+https://github.com/tbdavid2019/clef-skill
+
+Use this environment's native skill installer and install only `typesafe-ai` for
+the current agent. Choose user/global scope when supported. If you use the
+`skills` CLI, select the correct agent ID and install the complete skill folder:
+`skills/typesafe-ai/`, including its scripts and references. Do not install the
+Claude Code plugin unless this environment is Claude Code.
+
+If no installer is available, follow this agent's official documentation and
+copy the complete `skills/typesafe-ai/` directory to its supported skills path.
+Then verify that the agent can discover the skill and tell me how to invoke it.
+
+The two Clef endpoints are public and require no API keys. Do not request or set
+`CLEF_PRIMARY_API_KEY` or `CLEF_SECONDARY_API_KEY`. Leave `TYPESAFE_API_KEY` unset
+unless I explicitly choose to enable TypeSafe Jev as the final fallback. Do not
+send inference requests or change any service configuration during installation.
+```
 
 ### Claude Code plugin
 
