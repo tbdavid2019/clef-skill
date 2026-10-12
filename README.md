@@ -14,30 +14,30 @@
 
 ## 安裝
 
-沿用 `typesafe-ai` skill 與 `typesafe` plugin 名稱。目前 git origin 指向上游
-TypeSafe repo；以下採本機來源，讓代理載入這份修改版本。
+本 skill 由個人 repo 維護，並可提供同事安裝：
+[tbdavid2019/clef-skill](https://github.com/tbdavid2019/clef-skill)。沿用
+`typesafe-ai` skill 與 `typesafe` plugin 名稱。
 
 ### skills.sh
 
-在 repo 目錄執行：
+執行：
 
 ```bash
-npx skills add . --skill typesafe-ai
+npx skills add tbdavid2019/clef-skill --skill typesafe-ai
 ```
 
 依提示選擇代理；加上 `-g` 可安裝到全域。
 
 ### Claude Code plugin
 
-在 repo 目錄執行：
+執行：
 
 ```bash
-claude plugin marketplace add .
+claude plugin marketplace add tbdavid2019/clef-skill
 claude plugin install typesafe@typesafe-ai
 ```
 
-用 `/typesafe:typesafe-ai` 呼叫。既有上游 marketplace 安裝可依 Claude Code
-的 marketplace 管理方式切換至本機來源，確認載入這份 Clef 版本。
+用 `/typesafe:typesafe-ai` 呼叫。團隊成員可以使用同一 repo 安裝並取得更新。
 
 ## 使用
 
