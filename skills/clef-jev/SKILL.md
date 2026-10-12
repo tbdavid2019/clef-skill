@@ -1,9 +1,9 @@
 ---
-name: typesafe-ai
+name: clef-jev
 license: MIT
 description: >
   Build typed AI decisions with self-hosted Clef-Flash: clef.create360.ai first,
-  clef.aiurl.tw second, and TypeSafe Jev last. Use for semantic routing, ranking,
+  clef.aiurl.tw second, and Jev last. Use for semantic routing, ranking,
   extraction, verification, and scoring with choice, noul, and score probabilities,
   or configuring System One base URLs and provider failover.
 ---
@@ -14,8 +14,8 @@ Use System One models for focused semantic judgments over text or application
 state. They return typed answers and probabilities. Keep exact rules, calculations,
 permissions, and actions in application code.
 
-This fork defaults to two self-hosted **Clef-Flash** services, with **Jev** as the
-final fallback. Preserve the skill name `typesafe-ai` for invocation compatibility.
+This skill combines two self-hosted **Clef-Flash** services with **Jev** as the
+final fallback. Invoke it as `clef-jev`.
 
 ## Provider configuration
 
@@ -23,7 +23,7 @@ final fallback. Preserve the skill name `typesafe-ai` for invocation compatibili
 | --- | --- | --- | --- |
 | 1 | Clef primary | `https://clef.create360.ai` | `clef-flash` |
 | 2 | Clef secondary | `https://clef.aiurl.tw` | `clef-flash` |
-| 3 | TypeSafe Jev | `https://api.typesafe.ai` | `jev-latest` |
+| 3 | Jev | `https://api.typesafe.ai` | `jev-latest` |
 
 All use `POST /v1/systemone`. A base URL is an HTTPS origin without `/v1`;
 append the endpoint once. Override Clef hosts independently with

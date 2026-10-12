@@ -1,7 +1,7 @@
-# Clef Decision Skill
+# Clef + Jev Decision Skill
 
 以自架 Clef-Flash 建立具型別的 AI 決策流程：分類 `choice`、是非機率 `noul`、
-等級評分 `score`，並依序使用兩組自架服務與最後的 TypeSafe Jev fallback。
+等級評分 `score`，並依序使用兩組自架服務與最後的 Jev fallback。
 
 | 順位 | Base URL | 請求模型 |
 |---|---|---|
@@ -12,91 +12,70 @@
 三組推論端點皆為 `POST /v1/systemone`。服務切換由呼叫程式執行；skill 提供
 整合規則，附帶的 Python 工具已實作上述順序。
 
-## 安裝
+## OpenCode 安裝
 
-本 skill 由個人 repo 維護，並可提供同事安裝：
-[tbdavid2019/clef-skill](https://github.com/tbdavid2019/clef-skill)。沿用
-`typesafe-ai` skill 與 `typesafe` plugin 名稱。
-
-### skills.sh
-
-執行：
+這個 repo 由個人維護，也提供同事共用：
+[tbdavid2019/clef-skill](https://github.com/tbdavid2019/clef-skill)。在 OpenCode
+安裝為個人全域 skill：
 
 ```bash
-npx skills add tbdavid2019/clef-skill --skill typesafe-ai
+npx skills add tbdavid2019/clef-skill --skill clef-jev -g -a opencode -y
 ```
 
-依提示選擇代理；加上 `-g` 可安裝到全域。
+在 OpenCode 使用 `@clef-jev` 載入 skill。若要跟某個專案一起版控，移除 `-g`、
+加上 `--copy`，並提交產生的 `.agents/skills/clef-jev` 目錄。
 
-### Codex、Gemini CLI、Antigravity、Cursor、Pi、OpenCode
+## 其他支援的代理
 
-這些工具都支援以 `SKILL.md` 為核心的 Agent Skills 格式。使用 skills CLI
-可一次安裝到個人環境中的多個代理：
+Codex、Gemini CLI、Antigravity／agy、Cursor、Pi 與其他 Agent Skills 相容代理
+都可以讀取同一份 `SKILL.md`。例如一次安裝到個人環境：
 
 ```bash
-npx skills add tbdavid2019/clef-skill --skill typesafe-ai -g \
-  -a claude-code -a codex -a gemini-cli -a antigravity -a cursor \
-  -a antigravity-cli -a pi -a opencode -y
+npx skills add tbdavid2019/clef-skill --skill clef-jev -g \
+  -a codex -a gemini-cli -a antigravity -a antigravity-cli \
+  -a cursor -a pi -a opencode -y
 ```
 
-Claude Code plugin 命令只用於 Claude Code；其他代理載入同一份
-`skills/typesafe-ai/SKILL.md`、scripts 與 references。Agent Skills
-[格式](https://developers.openai.com/codex/skills)與各代理的載入方式見
+各代理使用自己的技能目錄與啟用方式；skills CLI 會安裝到指定代理的位置。
+Cursor Cloud Agents 需同步個人 skill，或採用專案層級的 `.agents/skills`。
+參見 [Codex](https://developers.openai.com/codex/skills)、
 [Gemini CLI](https://geminicli.com/docs/cli/using-agent-skills/)、
 [Antigravity](https://www.antigravity.google/docs/skills)、
-[Cursor](https://cursor.com/docs/skills)、
-[Pi](https://pi.dev/docs/latest/skills)及
-[OpenCode](https://opencode.ai/docs/skills)文件。
+[Cursor](https://cursor.com/docs/skills)、[Pi](https://pi.dev/docs/latest/skills)
+及 [OpenCode](https://opencode.ai/docs/skills) 官方文件。
 
-Cursor 本機可讀 user/global skill。Cursor Cloud Agents 需要在設定中同步
-個人 skills，或在工作 repo 中加入 project-level skill。
+## 給 LLM 的 OpenCode 安裝 Prompt
 
-### 給 LLM 的安裝 Prompt
-
-把以下 prompt 和 repo URL 一起交給目標代理：
+把以下英文 prompt 和 repo URL 一起交給 OpenCode：
 
 ```text
-Please install the `typesafe-ai` Agent Skill from this repository:
+Install the clef-jev Agent Skill from this repository:
 https://github.com/tbdavid2019/clef-skill
 
-Use this environment's native skill installer and install only `typesafe-ai` for
-the current agent. Choose user/global scope when supported. If you use the
-`skills` CLI, select the correct agent ID and install the complete skill folder:
-`skills/typesafe-ai/`, including its scripts and references. Do not install the
-Claude Code plugin unless this environment is Claude Code.
+This is an OpenCode environment. Use the native skill installer or run:
+npx skills add tbdavid2019/clef-skill --skill clef-jev -g -a opencode -y
 
-If no installer is available, follow this agent's official documentation and
-copy the complete `skills/typesafe-ai/` directory to its supported skills path.
-Then verify that the agent can discover the skill and tell me how to invoke it.
+Install only clef-jev. Keep the complete skill directory, including scripts and
+references. Confirm that OpenCode can discover it and tell me to invoke it as
+@clef-jev.
 
-The two Clef endpoints are public and require no API keys. Do not request or set
-`CLEF_PRIMARY_API_KEY` or `CLEF_SECONDARY_API_KEY`. Leave `TYPESAFE_API_KEY` unset
-unless I explicitly choose to enable TypeSafe Jev as the final fallback. Do not
-send inference requests or change any service configuration during installation.
+The self-hosted Clef endpoints require no API keys. Do not request or set Clef
+API keys. Leave TYPESAFE_API_KEY unset unless I explicitly ask to enable Jev as
+the final fallback. Do not call the inference API or change service settings
+during installation.
 ```
-
-### Claude Code plugin
-
-執行：
-
-```bash
-claude plugin marketplace add tbdavid2019/clef-skill
-claude plugin install typesafe@typesafe-ai
-```
-
-用 `/typesafe:typesafe-ai` 呼叫。團隊成員可以使用同一 repo 安裝並取得更新。
 
 ## 使用
 
 向代理描述需求，例如：
 
-> 使用 typesafe-ai，讓 Clef 對客服工單分類。create360 作為主要服務，
+> 使用 clef-jev，讓 Clef 對客服工單分類。create360 作為主要服務，
 > aiurl 作為第二順位，Jev 作為最後 fallback，低信心結果交由人工處理。
 
 也可直接使用 Python 3 標準函式庫工具：
 
 ```bash
-python3 skills/typesafe-ai/scripts/systemone.py --timeout 15 <<'JSON'
+python3 skills/clef-jev/scripts/systemone.py --timeout 15 <<'JSON'
 {
   "state": "發票已付款。",
   "questions": {
@@ -144,11 +123,11 @@ Choice 的候選集合需維持完整。
 
 ## 文件與驗證
 
-- [Skill](skills/typesafe-ai/SKILL.md)
-- [API 相容性與 fallback 規則](skills/typesafe-ai/references/api-contract.md)
-- [決策設計與 cookbooks](skills/typesafe-ai/references/decision-design.md)
-- [第二組服務修訂與備份](skills/typesafe-ai/references/secondary-api-revision.md)
-- [主要服務 Score legend 文件修訂](skills/typesafe-ai/references/primary-api-revision.md)
+- [Skill](skills/clef-jev/SKILL.md)
+- [API 相容性與 fallback 規則](skills/clef-jev/references/api-contract.md)
+- [決策設計與 cookbooks](skills/clef-jev/references/decision-design.md)
+- [第二組服務修訂與備份](skills/clef-jev/references/secondary-api-revision.md)
+- [主要服務 Score legend 文件修訂](skills/clef-jev/references/primary-api-revision.md)
 - 主要服務：[Swagger](https://clef.create360.ai/docs)、[OpenAPI](https://clef.create360.ai/openapi.json)
 - 第二順位：[Swagger](https://clef.aiurl.tw/docs)、[OpenAPI](https://clef.aiurl.tw/openapi.json)
 

@@ -8,7 +8,7 @@ from urllib.error import HTTPError, URLError
 
 
 spec = importlib.util.spec_from_file_location(
-    "systemone", Path(__file__).parents[1] / "skills/typesafe-ai/scripts/systemone.py"
+    "systemone", Path(__file__).parents[1] / "skills/clef-jev/scripts/systemone.py"
 )
 systemone = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(systemone)
