@@ -1,7 +1,7 @@
 {
   "name": "typesafe",
-  "version": "0.5.7",
-  "description": "Agent skills for building with the TypeSafe System One API.",
+  "version": "1.0.0",
+  "description": "Clef-first typed decisions with configurable self-hosted base URLs and TypeSafe Jev as the final fallback.",
   "author": {
     "name": "TypeSafe AI",
     "url": "https://typesafe.ai"

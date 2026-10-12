@@ -2,148 +2,173 @@
 name: typesafe-ai
 license: MIT
 description: >
-  Build AI-powered software with TypeSafe: small units of AI intelligence you
-  can use like programming primitives. Its System One models, including Jev,
-  turn natural language and application state into typed judgments and
-  probabilities that code can combine. Use when a feature needs programmable
-  common sense, when brainstorming what AI could make possible in an app, or
-  when an LLM prompt-and-parse step could become a structured decision.
-  Applications include routing, ranking, extraction, verification, and
-  interactive experiences; these are starting points, not the limits.
-  Read live docs and cookbooks to find useful patterns and discover new combinations.
+  Build typed AI decisions with self-hosted Clef-Flash: clef.create360.ai first,
+  clef.aiurl.tw second, and TypeSafe Jev last. Use for semantic routing, ranking,
+  extraction, verification, and scoring with choice, noul, and score probabilities,
+  or configuring System One base URLs and provider failover.
 ---
 
-# Build with TypeSafe
+# Build decisions with Clef and Jev
 
-TypeSafe makes units of AI intelligence usable like programming primitives: small
-judgments you can compose into larger capabilities. Its **System One models** return
-fast, focused judgments that software can consume directly. **Jev** is TypeSafe's
-flagship and first System One model. It understands natural language and returns
-typed answers and probabilities rather
-than generating text or reasoning explanations. Code owns the workflow; the model
-supplies programmable common sense where ordinary code needs semantic understanding.
+Use System One models for focused semantic judgments over text or application
+state. They return typed answers and probabilities. Keep exact rules, calculations,
+permissions, and actions in application code.
 
-## Read the live docs
+This fork defaults to two self-hosted **Clef-Flash** services, with **Jev** as the
+final fallback. Preserve the skill name `typesafe-ai` for invocation compatibility.
 
-**The live TypeSafe docs are the source of truth. Read them as part of the task.**
-This skill gives direction; the docs carry current concepts, prompting guidance,
-API contracts, SDK usage, models, limits, and worked examples.
+## Provider configuration
 
-- Start with the [documentation index](https://docs.typesafe.ai/llms.txt) to discover
-  relevant pages and cookbooks. Use targeted reads rather than loading the entire site.
-- Mintlify serves Markdown by appending `.md` to a page path, for example
-  [how to build with TypeSafe](https://docs.typesafe.ai/concepts/how-to-build-with-system-one.md).
-  Follow links from the index; convert extensionless documentation page links to
-  `.md` when useful. Resolve relative links against `https://docs.typesafe.ai`.
-- Before writing an integration, read the current API or chosen SDK page and the
-  question guidance relevant to the design. For a new workflow, also inspect the
-  closest cookbook: it often shows a better decomposition than a generic classifier.
-- If the index is unavailable, use the direct links below or the site's navigation.
-  If Markdown fetching fails, try the normal page. If live access is unavailable,
-  use available local docs or installed SDK types, state that limitation, and avoid
-  inventing version-dependent details.
+| Priority | Provider | Base URL | Request model |
+| --- | --- | --- | --- |
+| 1 | Clef primary | `https://clef.create360.ai` | `clef-flash` |
+| 2 | Clef secondary | `https://clef.aiurl.tw` | `clef-flash` |
+| 3 | TypeSafe Jev | `https://api.typesafe.ai` | `jev-latest` |
 
-| Task | Start here; follow the relevant details |
-| --- | --- |
-| Understand the programming model | [System One](https://docs.typesafe.ai/concepts/system-one.md), [building guide](https://docs.typesafe.ai/concepts/how-to-build-with-system-one.md) |
-| Explore what to build | [Use-case map](https://docs.typesafe.ai/concepts/use-case-map.md), then relevant cookbooks from the index |
-| Prepare inputs and questions | [State](https://docs.typesafe.ai/concepts/state.md), [primitives](https://docs.typesafe.ai/primitives.md), then the chosen primitive's page |
-| Decide how to handle uncertainty | [Confidence](https://docs.typesafe.ai/confidence.md) |
-| Write API code | [HTTP API](https://docs.typesafe.ai/api.md), [Python SDK](https://docs.typesafe.ai/sdk/python.md), or [JavaScript SDK](https://docs.typesafe.ai/sdk/javascript.md) |
-| Update an older integration | [Migration guide](https://docs.typesafe.ai/migrating-to-v1.md) and the installed SDK's current reference |
+All use `POST /v1/systemone`. A base URL is an HTTPS origin without `/v1`;
+append the endpoint once. Override Clef hosts independently with
+`CLEF_PRIMARY_BASE_URL` and `CLEF_SECONDARY_BASE_URL`. Explicit user choices about
+hosting and order take precedence over defaults.
 
-## Find the useful shape
+Jev requires `TYPESAFE_API_KEY`. Self-hosted services can use their own optional
+`CLEF_PRIMARY_API_KEY` and `CLEF_SECONDARY_API_KEY` for Bearer authentication.
+Send each key only to its provider. Resolve keys server-side, outside source,
+frontend bundles, and logs. The bundled client refuses redirects to keep
+credentials on the configured host.
 
-Start from the behavior the user wants: what will the application show, select,
-change, or hand off? Work backward to the judgments it needs. Keep known rules,
-calculations, exact lookups, and execution in code. Preserve the user's chosen stack
-and scope; add TypeSafe where semantic understanding helps.
+## Read the applicable source
 
-When brainstorming or choosing an architecture, consider more than classification.
-The patterns below are starting points: combine primitives around the user's goal,
-including ideas that do not fit an established recipe.
+Before integration, read [API contracts and failure rules](references/api-contract.md)
+and each configured service's live OpenAPI specification:
 
-- **Route and fill known arguments.** A request can select a handler and its typed
-  parameters. Ask useful branch-specific questions up front and consume only the
-  relevant answers. Explore [function calling](https://docs.typesafe.ai/cookbooks/function_calling.md)
-  and [speculative fan-out](https://docs.typesafe.ai/patterns/fan-out.md).
-- **Select instead of generate.** Find candidate values or source spans in code,
-  use a judgment to select the intended one, then copy or normalize it. Code can
-  also assemble source text into a formatted document or reading guide. Explore
-  [value extraction](https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook.md)
-  and [structure recovery](https://docs.typesafe.ai/cookbooks/autoformat.md).
-- **Find and judge evidence.** Retrieve candidates, compare their relevance to a
-  query, and select useful context. Explore [reranking](https://docs.typesafe.ai/cookbooks/rerank_typesafe.md)
-  and [hierarchical classification](https://docs.typesafe.ai/cookbooks/hierarchical_classification.md).
-- **Turn judgments into reusable data.** Score dimensions once, then let code or
-  user controls change weights, thresholds, rankings, and views. With labeled
-  outcomes, those signals can become classical ML features. Explore
-  [composite scoring](https://docs.typesafe.ai/patterns/composite-scoring.md) and
-  [feature discovery](https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery.md).
-- **Verify and escalate.** Check specific claims or fields against their evidence;
-  send uncertain or failing cases to a person or reasoning model. Explore
-  [citation checks](https://docs.typesafe.ai/cookbooks/citation_check.md) and
-  [extraction cascades](https://docs.typesafe.ai/cookbooks/sde_cascade.md).
-- **Respond to changing state.** Code can retain goals and observations while fresh
-  judgments guide the next bounded step. Keep inferred state distinct from observed
-  facts, and check freshness before applying a result to a changed situation.
+- Primary: [OpenAPI](https://clef.create360.ai/openapi.json),
+  [Swagger](https://clef.create360.ai/docs), [ReDoc](https://clef.create360.ai/redoc),
+  [health](https://clef.create360.ai/health).
+- Secondary: [OpenAPI](https://clef.aiurl.tw/openapi.json),
+  [Swagger](https://clef.aiurl.tw/docs), [ReDoc](https://clef.aiurl.tw/redoc),
+  [health](https://clef.aiurl.tw/health).
+- Jev: [HTTP API](https://docs.typesafe.ai/api.md). Discover prompting guidance,
+  SDK references, and cookbooks through the [index](https://docs.typesafe.ai/llms.txt).
+  Mintlify pages can be read with `.md` appended to page paths.
 
-For open-ended requests, offer the few directions that best serve the user's goal
-and recommend a starting point. For a concrete request, choose the relevant pattern
-and build; a brainstorm is not a mandatory detour.
+Clef's own live contract governs its capabilities. Reconcile TypeSafe examples
+with that contract before using them on Clef. If live docs are unavailable, use
+this reference baseline and state which capabilities remain unverified.
 
-## Design the judgments
+The secondary initially returned 403 to a default HTTP client and accepted an
+explicit browser-style User-Agent. The helper includes one. Persistent 403 calls
+for checking the host's access policy and recording that access failure.
 
-Choose by what the answer means, then read the relevant primitive page:
+Use health endpoints for monitoring or diagnosis. Interpret readiness fields per
+host: primary currently reports `status: ok`, secondary `status: healthy`.
+Successful inference verifies integration. Avoid adding a health round trip to
+every inference or treating readiness as a decision answer.
 
-| Need | Primitive | Important distinction |
-| --- | --- | --- |
-| One of a defined set | [Choice](https://docs.typesafe.ai/primitives/choice.md) | Picks one option; its distribution compares competing options |
-| Whether a condition holds | [Noul](https://docs.typesafe.ai/primitives/noul.md) | Probability of yes; no separate confidence; use one per label when several may apply |
-| Degree along a described dimension | [Score](https://docs.typesafe.ai/primitives/score.md) | Probability-weighted position on ordered levels; use comparable per-item Scores for graded ranking |
+## Portable request contract
 
-Give each question enough relevant **state** to answer: source text, identities,
-relationships, policies, and current facts. Prefer named JSON fields when context
-has several parts. Put the judgment in **instructions** and define its possible
-answers in **criteria**. Question IDs are for code and are not sent to the model;
-include complete meaning in the question. Reference nested state with backticked
-paths such as `ticket.messages[0].text`.
+Automatic failover uses the providers' shared subset:
 
-Ask one narrow, coherent judgment per question. Split independently useful dimensions,
-without destroying the relationship being judged. A bounded action selection or
-contextual interpretation is valid; atomic does not mean literal fact extraction
-or a one-sentence limit. Strings work for simple questions. Use structured objects
-or arrays when definitions, contrasts, exclusions, or examples clarify instructions
-or criteria. Score levels must describe concrete situations and stand on their own.
+- `state`: string, JSON object, or array.
+- `questions`: non-empty map keyed by stable caller-chosen IDs.
+- Each question has explicit `type` and non-empty `instructions`: a **string,
+  JSON object, or array**.
+  Put complete meaning in instructions; use IDs for application code.
+- `choice`: 1–255 option IDs mapped to **string, object, array, or null** descriptions. Include a no-match
+  outcome when the task needs one.
+- `noul`: yes/no question with optional string, object, or array descriptions in `criteria.true`
+  and `criteria.false`. Its result is the probability of true.
+- `score`: 2–10 ordered **string, object, or array** descriptions, low to high. Its result is a
+  probability-weighted level index starting at zero.
 
-Keep the needed answers available. Include a no-match outcome when nothing may fit;
-use a separate presence judgment when it is independently useful. For source-value
-selection, check candidate coverage: the model cannot choose an omitted value.
+Set `clef-flash` for each Clef attempt and `jev-latest` for Jev. The secondary
+may return `clef-flash-q4_k_m`; preserve the actual response model for provenance.
+Both Clef services accept structured instructions and criteria, including null
+Choice descriptions. The secondary's API wrapper was aligned with the primary on
+2026-10-12 (version 1.2.0); its older string-only schema was an API-layer restriction.
+Score legends may retain object or array descriptions; preserve these JSON values.
+Images, null state, and streaming need a separate provider capability check before
+using the full Jev fallback chain. The portable helper rejects unsupported fields
+before sending requests rather than silently dropping them.
 
-## Compose and verify
+Clef's complete rendered prompt must fit within **4096 tokens**, counting state,
+all instructions, criteria, model-template overhead, and supported image tokens.
+Leave room for overhead. Character counts and fixed question counts are estimates.
+Split independent question batches when needed and retain their required state.
+Keep a Choice's candidate set intact: probabilities from separate candidate
+subsets are not directly comparable. Long state needs deliberate evidence
+selection or a task-specific decomposition.
 
-**Ask independent questions over the same state together**, including useful
-speculative questions. They run in parallel and cannot see one another's answers.
-State each speculative premise explicitly; code consumes the applicable answers.
-A second request is warranted when an earlier answer is needed to fetch evidence,
-construct new state, or determine the next options. Extra questions still use tokens;
-measure actual request budgets, cost, and end-to-end latency.
+## Bounded failover
 
-Use probabilities and confidence to guide behavior, with thresholds evaluated on
-the user's data and consequences. Choice/Score confidence summarizes distribution
-concentration, not overall workflow correctness or permission to act. A Noul near
-0.5 means similar probability for yes and no, not medium intensity. Several
-acceptable alternatives can also spread probability; low confidence need not
-invalidate a harmless preference choice. Ignore uncertainty on unused branches.
+Prefer direct HTTP for this chain. The bundled Python 3 standard-library helper
+can be used directly or as a reference implementation:
 
-Keep policy explicit and raw judgments reusable. Weighted scores suit compensating
-preferences; an “any serious violation” rule needs separate conditions. Changing a
-weight or display filter need not rerun inference when evidence and question meanings
-are unchanged. Typed output guarantees the interface, not truth. System One models
-are trained for calibrated decisions; validate their performance in the target domain.
+```bash
+python3 <skill-directory>/scripts/systemone.py request.json --timeout 15
+```
 
-Test representative cases and the resulting application behavior. For failures,
-inspect the exact state, questions, candidates, answers, composition, and observed
-outcome. Separate missing evidence, model errors, code errors, and service failures.
-Treat cookbook thresholds and demo results as examples to evaluate, not universal
-rules or permanent model limitations. Keep API credentials server-side in web apps.
+Resolve `<skill-directory>` relative to this SKILL.md, including after installation.
+The helper also accepts stdin. For example:
+
+```json
+{
+  "state": "結帳出現 504，款項已扣除，訂單尚未建立。",
+  "questions": {
+    "department": {
+      "type": "choice",
+      "instructions": "哪個部門應處理這筆工單？",
+      "criteria": {
+        "billing": "扣款、退款、對帳問題",
+        "technical": "系統錯誤、訂單建立失敗",
+        "other": "其他問題"
+      }
+    }
+  }
+}
+```
+
+Each provider gets one attempt in priority order. The timeout is the underlying
+HTTP socket timeout per attempt, not a hard wall-clock deadline for the entire
+chain. Applications with strict latency budgets need an overall deadline too.
+
+- Switch on connection failure, timeout, 429, 5xx, or invalid response structure.
+- Clef 401/403 are host-specific access failures: record them and try the next
+  provider. Jev authentication failure stops and surfaces configuration errors.
+- Stop on 400/422 and other HTTP errors. Correct input or capacity before retrying;
+  a known oversized request also exceeds the secondary's limit.
+- Recognize a backend's explicit physical batch overflow even if it uses 500:
+  reduce input or split independent questions instead of switching services.
+  Secondary 1.2.0 maps this known overflow to 400; primary currently returns 500.
+- If Jev's key is unset, the two Clef services remain usable. If both fail, report
+  the missing key and exhausted providers instead of a synthetic decision.
+- Keep state, IDs, instructions, and candidates identical across attempts;
+  change only provider configuration, credentials, and model.
+- Return successful provider identity, actual response model, usage, and concise
+  previous failure reasons. Exclude state and credentials from diagnostic logs.
+
+The CLI returns `provider`, `failures`, and the raw API `response` in an envelope.
+Consume answers at `response.answers`; direct API answers are at root `answers`.
+On exhaustion the CLI writes an error to stderr and exits with code 1.
+
+An SDK's custom `baseURL` changes routing; it does not implement this chain.
+Check the installed SDK's authentication requirements, model defaults, and retries.
+Avoid an implicit `jev-latest` on Clef and layered retries that multiply latency.
+
+## Design and verify decisions
+
+Read [decision design and composition](references/decision-design.md) when
+choosing primitives, decomposing workflows, or exploring application patterns.
+It preserves upstream routing, extraction, ranking, scoring, and verification
+patterns with links to TypeSafe cookbooks.
+
+Service availability and uncertainty use separate policies. A valid answer with
+low confidence remains a successful response. Design any Jev quality escalation
+explicitly and evaluate thresholds on the user's data. A Noul near 0.5 expresses
+uncertainty about yes/no. Choice/Score confidence describes distribution
+concentration, not permission to act. Keep thresholds specific to each provider
+and task until calibration is measured.
+
+Validate representative application outcomes plus primary success, secondary
+fallback, final Jev fallback, input errors, timeout, invalid responses, exhaustion,
+and credential isolation. Use controlled failures for fallback testing and benign
+examples for live checks. State whether Jev was simulated or tested with a real key.
