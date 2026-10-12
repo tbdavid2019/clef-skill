@@ -28,6 +28,25 @@ npx skills add tbdavid2019/clef-skill --skill typesafe-ai
 
 依提示選擇代理；加上 `-g` 可安裝到全域。
 
+### Codex、Gemini CLI、Antigravity、Pi、OpenCode
+
+這些工具都支援以 `SKILL.md` 為核心的 Agent Skills 格式。使用 skills CLI
+可一次安裝到個人環境中的多個代理：
+
+```bash
+npx skills add tbdavid2019/clef-skill --skill typesafe-ai -g \
+  -a claude-code -a codex -a gemini-cli -a antigravity \
+  -a antigravity-cli -a pi -a opencode -y
+```
+
+Claude Code plugin 命令只用於 Claude Code；其他代理載入同一份
+`skills/typesafe-ai/SKILL.md`、scripts 與 references。Agent Skills
+[格式](https://developers.openai.com/codex/skills)與各代理的載入方式見
+[Gemini CLI](https://geminicli.com/docs/cli/using-agent-skills/)、
+[Antigravity](https://www.antigravity.google/docs/skills)、
+[Pi](https://pi.dev/docs/latest/skills)及
+[OpenCode](https://opencode.ai/docs/skills)文件。
+
 ### Claude Code plugin
 
 執行：
@@ -69,9 +88,10 @@ API `response`；決策位於 `response.answers`。每個服務最多嘗試一�
 |---|---|---|
 | `CLEF_PRIMARY_BASE_URL` | 主要服務 HTTPS origin | `https://clef.create360.ai` |
 | `CLEF_SECONDARY_BASE_URL` | 第二順位 HTTPS origin | `https://clef.aiurl.tw` |
-| `CLEF_PRIMARY_API_KEY` | 主要服務專用 Bearer key | 省略 |
-| `CLEF_SECONDARY_API_KEY` | 第二順位專用 Bearer key | 省略 |
-| `TYPESAFE_API_KEY` | 最後 Jev fallback 的官方 key | Jev 呼叫時必須設定 |
+| `TYPESAFE_API_KEY` | 啟用最後 Jev fallback 的官方 key | 可省略 |
+
+使用預設兩組 Clef 時不需設定任何 API key；Base URL 預設值也已內建。
+只有希望兩組 Clef 都無法連線時再呼叫 Jev，才需要提供 `TYPESAFE_API_KEY`。
 
 Base URL 使用主機 origin，工具會加入端點。例如：
 
@@ -80,8 +100,9 @@ export CLEF_PRIMARY_BASE_URL=https://my-clef.example.com
 export CLEF_SECONDARY_BASE_URL=https://backup-clef.example.com
 ```
 
-以環境變數或 secret manager 提供金鑰。工具把各服務的金鑰限定傳給對應主機，
-並拒絕 HTTP redirects。Jev key 尚未設定時，兩組 Clef 仍可正常呼叫。
+只有更換 Clef 主機時才覆寫 Base URL。若啟用 Jev fallback，以環境變數或
+secret manager 提供 `TYPESAFE_API_KEY`。工具不會對 Clef 傳送 Authorization
+header，並會拒絕 redirects，確保 Jev key 只傳給官方端點。
 
 連線失敗、timeout、429、5xx 或無效回應會切換下一組；Clef 的 401／403
 也會記錄後切換。400／422 停止並回報輸入或容量問題。

@@ -23,7 +23,8 @@ Send JSON to `POST <base-url>/v1/systemone`:
 }
 ```
 
-For Jev, change `model` to `jev-latest` and use the official Bearer key.
+For Jev, change `model` to `jev-latest` and use the official Bearer key. Clef
+accepts these requests without authentication.
 Responses contain `model`, `answers`, and `usage.input_tokens` / `output_tokens`.
 Answer IDs match question IDs. Preserve extra fields, including the secondary's
 `latency_seconds`; consume only the fields required by the application.
@@ -93,9 +94,9 @@ object, and array legend values.
 The helper makes at most three inference attempts, without same-provider retries.
 It returns provenance outside the raw response. Add an overall deadline, circuit
 breaker, or backoff for repeated traffic when the application needs it; keep retries
-bounded. Each custom origin receives only its own optional Bearer key; Jev's key
+bounded. The two Clef origins receive no Authorization header. Jev's Bearer key
 goes only to the fixed official origin. HTTPS origins are required and redirects
-are refused. Other authentication schemes need an explicit adapter.
+are refused.
 
 ## Sources
 

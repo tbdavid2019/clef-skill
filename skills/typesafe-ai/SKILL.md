@@ -30,11 +30,11 @@ append the endpoint once. Override Clef hosts independently with
 `CLEF_PRIMARY_BASE_URL` and `CLEF_SECONDARY_BASE_URL`. Explicit user choices about
 hosting and order take precedence over defaults.
 
-Jev requires `TYPESAFE_API_KEY`. Self-hosted services can use their own optional
-`CLEF_PRIMARY_API_KEY` and `CLEF_SECONDARY_API_KEY` for Bearer authentication.
-Send each key only to its provider. Resolve keys server-side, outside source,
-frontend bundles, and logs. The bundled client refuses redirects to keep
-credentials on the configured host.
+The two self-hosted Clef services require no API key. The helper never sends an
+Authorization header to either Clef host. Set `TYPESAFE_API_KEY` only when you
+want to enable the final Jev fallback. Keep that key in the agent's runtime
+environment, outside source, frontend bundles, and logs. The helper refuses
+redirects so Jev credentials stay on the official host.
 
 ## Read the applicable source
 

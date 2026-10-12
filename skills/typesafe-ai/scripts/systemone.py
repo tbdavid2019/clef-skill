@@ -124,8 +124,8 @@ def evaluate(payload, timeout=15):
     if not number(timeout, 0.001, 3600):
         raise DecisionError("Timeout must be finite and between 0.001 and 3600 seconds.")
     providers = [
-        ("clef-primary", os.getenv("CLEF_PRIMARY_BASE_URL", "https://clef.create360.ai"), "clef-flash", os.getenv("CLEF_PRIMARY_API_KEY")),
-        ("clef-secondary", os.getenv("CLEF_SECONDARY_BASE_URL", "https://clef.aiurl.tw"), "clef-flash", os.getenv("CLEF_SECONDARY_API_KEY")),
+        ("clef-primary", os.getenv("CLEF_PRIMARY_BASE_URL", "https://clef.create360.ai"), "clef-flash", None),
+        ("clef-secondary", os.getenv("CLEF_SECONDARY_BASE_URL", "https://clef.aiurl.tw"), "clef-flash", None),
         ("jev", "https://api.typesafe.ai", "jev-latest", os.getenv("TYPESAFE_API_KEY")),
     ]
     failures = []
