@@ -1,7 +1,8 @@
 # Clef + Jev Decision Skill
 
-以自架 Clef-Flash 建立具型別的 AI 決策流程：分類 `choice`、是非機率 `noul`、
-等級評分 `score`，並依序使用兩組自架服務與最後的 Jev fallback。
+用 Clef-Flash 與 Jev 判斷代理任務的執行方式：讀取目前環境的 model list，
+選擇主代理處理、單一 subagent 或平行 subagents，並選擇可用模型與模型層級。
+也支援應用程式的分類 `choice`、是非機率 `noul` 與等級評分 `score`。
 
 | 順位 | Base URL | 請求模型 |
 |---|---|---|
@@ -109,6 +110,27 @@ during installation.
 
 ## 使用
 
+遇到需要規劃、委派或選模型的任務時，代理依 skill 讀取目前環境的模型清單、
+代理工具與權限，再呼叫 Clef 做路由。路由工具會輸出計畫；實際開 subagent、
+切模型與設定 reasoning level 由該環境支援的工具執行。
+安裝 skill 提供按任務選用的觸發指引；每則訊息自動攔截需由 host hook 另外整合。
+
+可以這樣要求：
+
+> 使用 clef-jev，先讀取目前可用的 model list，判斷這個任務需要主代理、
+> 一個 subagent 或平行 subagents，並選擇符合成本與品質需求的模型。
+> 使用目前環境允許的工具執行計畫，回報實際採用的模型。
+
+代理會準備 runtime/task JSON，再執行：
+
+```bash
+python3 <skill-directory>/scripts/route.py routing-context.json
+```
+
+完整輸入與模型清單取得方式見[代理路由規格](skills/clef-jev/references/agent-routing.md)。
+模型清單來自目前 host；Clef 與 Jev 是做路由判斷的服務。模型清單或切換功能
+尚未提供時，skill 會指出限制，並採用目前支援的執行方式。
+
 向代理描述需求，例如：
 
 > 使用 clef-jev，讓 Clef 對客服工單分類。create360 作為主要服務，
@@ -167,6 +189,7 @@ Choice 的候選集合需維持完整。
 
 - [Skill](skills/clef-jev/SKILL.md)
 - [API 相容性與 fallback 規則](skills/clef-jev/references/api-contract.md)
+- [代理路由與動態模型清單](skills/clef-jev/references/agent-routing.md)
 - [決策設計與 cookbooks](skills/clef-jev/references/decision-design.md)
 - [第二組服務修訂與備份](skills/clef-jev/references/secondary-api-revision.md)
 - [主要服務 Score legend 文件修訂](skills/clef-jev/references/primary-api-revision.md)

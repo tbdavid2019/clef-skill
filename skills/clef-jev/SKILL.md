@@ -2,13 +2,14 @@
 name: clef-jev
 license: MIT
 description: >
-  Build typed AI decisions with self-hosted Clef-Flash: clef.create360.ai first,
-  clef.aiurl.tw second, and Jev last. Use for semantic routing, ranking,
-  extraction, verification, and scoring with choice, noul, and score probabilities,
-  or configuring System One base URLs and provider failover.
+  Route agent work using Clef-Flash with Jev fallback. Use before nontrivial tasks
+  when deciding whether to delegate or use parallel subagents, or which available
+  model and model level fits the task, cost, and host permissions. Read the current
+  agent's live model catalog and capabilities before deciding. Also use for typed
+  classification, verification, ranking, and scoring in applications.
 ---
 
-# Build decisions with Clef and Jev
+# Agent routing and typed decisions with Clef and Jev
 
 Use System One models for focused semantic judgments over text or application
 state. They return typed answers and probabilities. Keep exact rules, calculations,
@@ -22,6 +23,51 @@ This is a portable Agent Skill for Codex, Claude Code, OpenCode, Pi, Antigravity
 and invocation interface. Resolve scripts and references from this skill's own
 directory. The Python helper uses only the standard library and requires Python 3,
 shell execution, and outbound HTTPS access.
+
+## Route the agent's next task
+
+Use this workflow when delegation or model choice is open for a nontrivial task,
+and whenever the user asks which model or subagent strategy to use. Routine edits
+and direct factual replies can stay with the current agent without a routing call.
+Installing a skill enables task-based discovery; it does not install a hook that
+intercepts every message. A host can include this routing rule in its agent/project
+instructions if it should be required for matching tasks.
+
+1. Read the current agent's actual model listing and exposed tool capabilities.
+   Prefer native model-list APIs or tools, then the documented host CLI and
+   configured agent definitions. Read [runtime routing](references/agent-routing.md)
+   for the input contract and discovery guidance. Record where the catalog came
+   from. Provider credentials, installed-but-disabled models, and a vendor's public
+   marketing catalog do not establish model availability for this session.
+2. Construct a bounded runtime snapshot: current model, eligible available models,
+   known levels/costs/context limits, permitted targets, available subagent tools,
+   free slots, and whether the host permits model overrides. Exclude credentials
+   and unrelated context. Apply hard user budgets, modality/context requirements,
+   explicit model choices, and host permissions before generating candidates.
+3. Describe the task, dependencies, uncertainty, required evidence, expected output,
+   and cost/latency preferences. Call the bundled router:
+   `python3 <skill-directory>/scripts/route.py routing-context.json`.
+   It asks Clef to choose execution mode, then an eligible model for that mode.
+   The two Clef providers and optional Jev fallback are the decision engines;
+   the host catalog supplies the models that will do the user's work.
+4. Apply the plan using the host's real tools, within existing authorization.
+   For delegation, create bounded subtasks with separate outputs and ownership,
+   stay within the reported free slots, and consolidate and verify worker results.
+   The router emits JSON and does not itself spawn agents or change models.
+   Re-check capabilities before execution. Routing predictions do not grant tool
+   permissions. Host/user prohibitions take precedence over the decision.
+5. For `recommendation_only`, report the proposed model and the host limitation;
+   continue with the supported current model when appropriate. Confirm an actual
+   switch from the host's returned state before claiming it happened. If the model
+   catalog is unavailable, report that gap and keep the current model rather than
+   inventing model IDs or tiers. Native reasoning/intelligence levels need the
+   chosen model's actual supported options. Include `reasoning_levels` in the
+   catalog and declare effort-override capabilities so the router can choose one.
+
+Re-route after a material scope change, failed approach, newly available model,
+or changed capacity. A low-confidence route can stay with the current agent or
+receive additional evidence. Tune any escalation threshold on observed outcomes;
+avoid a permanent automatic "upgrade on low confidence" rule.
 
 ## Provider configuration
 
