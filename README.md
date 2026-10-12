@@ -12,27 +12,45 @@
 三組推論端點皆為 `POST /v1/systemone`。服務切換由呼叫程式執行；skill 提供
 整合規則，附帶的 Python 工具已實作上述順序。
 
-## OpenCode 安裝
+同一份 `clef-jev` skill 可安裝到 **Codex、Claude Code、OpenCode、Pi、
+Antigravity／agy、Gemini CLI、Cursor**。skill 使用通用 Agent Skills 格式；
+執行決策呼叫工具需有 Python 3、shell 執行權限與 HTTPS 網路存取。
+
+## 安裝到目前的代理
 
 這個 repo 由個人維護，也提供同事共用：
-[tbdavid2019/clef-skill](https://github.com/tbdavid2019/clef-skill)。在 OpenCode
-安裝為個人全域 skill：
+[tbdavid2019/clef-skill](https://github.com/tbdavid2019/clef-skill)。執行以下命令，
+依提示選擇目前使用的代理，安裝為個人全域 skill：
 
 ```bash
-npx skills add tbdavid2019/clef-skill --skill clef-jev -g -a opencode -y
+npx skills add tbdavid2019/clef-skill --skill clef-jev -g
 ```
 
-在 OpenCode 使用 `@clef-jev` 載入 skill。若要跟某個專案一起版控，移除 `-g`、
-加上 `--copy`，並提交產生的 `.agents/skills/clef-jev` 目錄。
+也可用 `-a` 明確指定目標代理：
 
-## 其他支援的代理
+| 代理 | skills CLI 的 `-a` 值 |
+|---|---|
+| Codex | `codex` |
+| Claude Code | `claude-code` |
+| OpenCode | `opencode` |
+| Pi | `pi` |
+| Antigravity IDE | `antigravity` |
+| Antigravity CLI／agy | `antigravity-cli` |
+| Gemini CLI | `gemini-cli` |
+| Cursor | `cursor` |
 
-Codex、Gemini CLI、Antigravity／agy、Cursor、Pi 與其他 Agent Skills 相容代理
-都可以讀取同一份 `SKILL.md`。例如一次安裝到個人環境：
+例如 OpenCode 可加 `-a opencode -y`，Claude Code 可加 `-a claude-code -y`。
+各代理使用自己的 skill 呼叫介面，也可以直接要求「使用 clef-jev」。
+若要與專案一起版控，移除 `-g` 並加上 `--copy`，提交安裝器產生的 skill 目錄。
+
+## 同時安裝到多個代理
+
+同一個 skill 目錄包含 `SKILL.md`、scripts 與 references。一次安裝到多個
+個人代理環境：
 
 ```bash
 npx skills add tbdavid2019/clef-skill --skill clef-jev -g \
-  -a codex -a gemini-cli -a antigravity -a antigravity-cli \
+  -a codex -a claude-code -a gemini-cli -a antigravity -a antigravity-cli \
   -a cursor -a pi -a opencode -y
 ```
 
@@ -44,20 +62,29 @@ Cursor Cloud Agents 需同步個人 skill，或採用專案層級的 `.agents/sk
 [Cursor](https://cursor.com/docs/skills)、[Pi](https://pi.dev/docs/latest/skills)
 及 [OpenCode](https://opencode.ai/docs/skills) 官方文件。
 
-## 給 LLM 的 OpenCode 安裝 Prompt
+## 給 LLM 的通用安裝 Prompt
 
-把以下英文 prompt 和 repo URL 一起交給 OpenCode：
+將以下英文 prompt 交給任何目標代理。LLM 應依目前環境選擇安裝方式：
 
 ```text
 Install the clef-jev Agent Skill from this repository:
 https://github.com/tbdavid2019/clef-skill
 
-This is an OpenCode environment. Use the native skill installer or run:
-npx skills add tbdavid2019/clef-skill --skill clef-jev -g -a opencode -y
+Determine which agent environment you are running in, then install clef-jev for
+that agent at user/global scope using its native Agent Skills installer or the
+skills CLI. This skill supports Codex, Claude Code, OpenCode, Pi, Antigravity
+(IDE and agy CLI), Gemini CLI, and Cursor. Use the matching skills CLI agent ID:
+codex, claude-code, opencode, pi, antigravity, antigravity-cli, gemini-cli, or cursor.
 
-Install only clef-jev. Keep the complete skill directory, including scripts and
-references. Confirm that OpenCode can discover it and tell me to invoke it as
-@clef-jev.
+For the skills CLI, replace AGENT_ID with the current agent's ID and run:
+npx skills add tbdavid2019/clef-skill --skill clef-jev -g -a AGENT_ID -y
+
+Install only clef-jev for the current agent. Keep the complete skills/clef-jev/
+directory, including scripts and references. If the installer is unavailable,
+copy that complete directory into the current agent's supported skills location.
+Verify discovery using that agent's own skill interface and report the installed
+path and how to invoke it. Do not assume any particular agent or invoke another
+agent's CLI. Check whether Python 3 and HTTPS access are available for the helper.
 
 The self-hosted Clef endpoints require no API keys. Do not request or set Clef
 API keys. Leave TYPESAFE_API_KEY unset unless I explicitly ask to enable Jev as

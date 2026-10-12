@@ -17,6 +17,12 @@ permissions, and actions in application code.
 This skill combines two self-hosted **Clef-Flash** services with **Jev** as the
 final fallback. Invoke it as `clef-jev`.
 
+This is a portable Agent Skill for Codex, Claude Code, OpenCode, Pi, Antigravity
+(IDE and agy CLI), Gemini CLI, and Cursor. Use the current agent's skill discovery
+and invocation interface. Resolve scripts and references from this skill's own
+directory. The Python helper uses only the standard library and requires Python 3,
+shell execution, and outbound HTTPS access.
+
 ## Provider configuration
 
 | Priority | Provider | Base URL | Request model |
